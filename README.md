@@ -2,7 +2,7 @@
 
 ###### author: YuefChen
 ###### Email: YueF_Chen@outlook.com
-###### url:[https://github.com/Chenta1121/MountAndBlade2_Mod_LordArmyEnhancement](https://github.com/Chenta1121/YuefPartyEnhancement)
+###### url:[https://github.com/Chenta1121/YuefPartyEnhancement](https://github.com/Chenta1121/YuefPartyEnhancement)
 ###### 
 ---
 ### 功能简介: 
