@@ -1,8 +1,8 @@
-﻿## 模组: YuefPartEnhancement;
+﻿## 模组: YuefPartyEnhancement;
 
 ###### author: YuefChen
 ###### Email: YueF_Chen@outlook.com
-###### url:[https://github.com/Chenta1121/YuefPartyEnhancement](https://github.com/Chenta1121/YuefPartyEnhancement)
+###### url: [https://github.com/Chenta1121/YuefPartyEnhancement](https://github.com/Chenta1121/YuefPartyEnhancement)
 ###### 
 ---
 ### 功能简介: 
@@ -23,4 +23,4 @@
 3. 默认兵种升阶概率为25%
 4. 募兵系统只会奖励平民兵种树和贵族兵种树包含的兵种,特殊兵种例如雇佣兵,中古战锤ROR士兵等不在列表内
 5. 升阶系统未覆盖一些模组自定义的部队,例如中古战锤的野兽人掠夺者部队
-6. [12.12更新]修改模组名称为YuefPartEnhancement使其与模组功能匹配
+6. [12.12更新]修改模组名称为YuefPartyEnhancement使其与模组功能匹配
