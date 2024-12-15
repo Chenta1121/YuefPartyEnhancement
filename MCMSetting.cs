@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+
 using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v1;
 using MCM.Abstractions.Base.Global;
+
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Localization;
 
 namespace YuefPartyEnhancement
@@ -20,7 +25,7 @@ namespace YuefPartyEnhancement
             get
             {
                 // 使用本地化字符串为显示名称提供文本
-                string text = new TextObject("{=YueF_ModName}领主部队增强Yuef", null).ToString();
+                string text = new TextObject("{=YueF_ModName}AI部队增强 Yuef ", null).ToString();
                 // 获取当前程序集的版本号
                 Version version = typeof(MCMSetting).Assembly.GetName().Version;
                 // 返回带版本号的模块名称
@@ -52,7 +57,7 @@ namespace YuefPartyEnhancement
         public bool IsRecruitmentEnabled { get; set; } = true; // 默认启用募兵功能
 
         // 每周领主奖励金额，AI领主获得的金额
-        [SettingProperty("每周领主奖励金额", 0, 1000000, RequireRestart = false, HintText = "AI领主获得的金额,已有金额高于500000不会进行奖励", Order = 2)]
+        [SettingProperty("每周领主奖励金额", 0, 1000000, RequireRestart = false, HintText = "AI领主获得的金额,已有金额高于1000000不会进行奖励", Order = 2)]
         [SettingPropertyGroup("部队募兵强化", GroupOrder = 1)]
         public int LordWeeklyGold { get; set; } = 300000;
 
@@ -101,10 +106,6 @@ namespace YuefPartyEnhancement
         [SettingPropertyGroup("部队募兵强化", GroupOrder = 2)]
         public int EliteSoldierOneTimeRecruitmentAmount { get; set; } = 10;
 
-        
-        
-        
-        
         [SettingProperty("是否对玩家启用", RequireRestart = false, HintText = "开启后,即使你在挂机,你的部队也会自己升级了,当然结果是随机的", Order = 1)]
         [SettingPropertyGroup("部队升阶强化", GroupOrder = 3)]
         public bool isPlayerAutoUpgradeEnabled { get; set; } = false; // 默认不启用
