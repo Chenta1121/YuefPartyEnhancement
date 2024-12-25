@@ -15,7 +15,7 @@ namespace YuefPartyEnhancement
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
             base.OnBeforeInitialModuleScreenSetAsRoot();
-            InformationManager.DisplayMessage(new InformationMessage("PartyEnhancement Author:Yuef", Colors.Green));
+            InformationManager.DisplayMessage(new InformationMessage("PartyEnhancement Author:YuefChen", Colors.Green));
         }
 
         protected override void InitializeGameStarter(Game game, IGameStarter gameStarterObject)

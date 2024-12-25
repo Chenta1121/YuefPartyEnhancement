@@ -1,31 +1,59 @@
 ﻿using System;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
+using MCM.Abstractions.Base.Global;
 
 namespace YuefPartyEnhancement
 {
-
     internal class AddGoldBehavior : CampaignBehaviorBase
     {
-        private const int GoldAmount = 200000; // 可配置的金钱增加量
-        private const int MaxGoldLimit = 300000; // 设定的金币上限
-        private void SettlementGoldGiver(Town Town)
+        private MCMSetting settings;
+        private int GoldAmount = 300000;
+        private int MaxGoldLimit = 300000;
+
+        public AddGoldBehavior()
         {
-            if (Town.Gold >= MaxGoldLimit)
+            
+        }
+
+        private void InitializeSettings()
+        {
+            settings = GlobalSettings<MCMSetting>.Instance;
+            if (settings != null)
             {
-                return; // 直接返回，不增加金币
+                GoldAmount = settings.dailyGoldAmount;
+                MaxGoldLimit = settings.maxGoldLimit;
             }
-            Town.ChangeGold(GoldAmount);
+        }
+
+        private void SettlementGoldGiver(Town town)
+        {
+            if (town == null) return;
+
+            if (town.Gold >= MaxGoldLimit)
+            {
+                return; 
+            }
+
+            town.ChangeGold(GoldAmount);
         }
 
         public override void SyncData(IDataStore dataStore)
         {
         }
+
+        // 注册事件监听
         public override void RegisterEvents()
         {
-            CampaignEvents.DailyTickTownEvent.AddNonSerializedListener(this, new Action<Town>(this.SettlementGoldGiver));
+            // 延迟初始化设置
+            InitializeSettings();
+
+            if (settings != null)
+            {
+                CampaignEvents.DailyTickTownEvent.AddNonSerializedListener(this, new Action<Town>(this.SettlementGoldGiver));
+            }
         }
     }
-
-
 }
+
+

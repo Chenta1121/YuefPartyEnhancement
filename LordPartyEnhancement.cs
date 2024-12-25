@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using MCM.Abstractions.Base.Global;
@@ -6,6 +7,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
 
 namespace YuefPartyEnhancement
 {
@@ -13,23 +15,39 @@ namespace YuefPartyEnhancement
     {
         private Dictionary<CharacterObject, List<CharacterObject>> basicTroopCache = new Dictionary<CharacterObject, List<CharacterObject>>();
         private Dictionary<CharacterObject, List<CharacterObject>> eliteTroopCache = new Dictionary<CharacterObject, List<CharacterObject>>();
+        private MCMSetting settings;
+        private Random random = new Random();
+
+
 
         public override void RegisterEvents()
         {
-            CampaignEvents.DailyTickEvent.AddNonSerializedListener(
-                this, new Action(this.DailyTick));
-            CampaignEvents.WeeklyTickEvent.AddNonSerializedListener(
-                this, new Action(this.WeeklyTick));
-            CampaignEvents.AfterSettlementEntered.AddNonSerializedListener(
-                this, new Action<MobileParty, Settlement, Hero>(this.AddSoliderToParty));
+            // 确保 settings 已经被初始化
+            settings = GlobalSettings<MCMSetting>.Instance;
+            if (settings != null)
+            {
+                CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(this.DailyTick));
+                CampaignEvents.WeeklyTickEvent.AddNonSerializedListener(this, new Action(this.WeeklyTick));
+                CampaignEvents.AfterSettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.AddSoliderToParty));
+            }
         }
-
         private void DailyTick()
         {
-            var settings = GlobalSettings<MCMSetting>.Instance;
 
+            // 检查 settings 是否为 null
+            if (settings == null)
+            {
+                return; // 如果 settings 为 null，直接返回
+            }
+
+            // 玩家自动升级
             if (settings.isPlayerAutoUpgradeEnabled)
-                UpgradeAIParty(MobileParty.MainParty.Party);
+            {
+                if (MobileParty.MainParty?.Party != null) // 检查 MainParty 和 Party 是否为 null
+                {
+                    UpgradeAIParty(MobileParty.MainParty.Party);
+                }
+            }
 
             // 遍历所有的 Lord 部队
             foreach (MobileParty mobileParty in MobileParty.AllLordParties)
@@ -37,18 +55,30 @@ namespace YuefPartyEnhancement
                 if (mobileParty.IsMainParty) continue;
 
                 var leaderHero = mobileParty.LeaderHero;
-                if (leaderHero != null && leaderHero.Clan != null)
-                {
-                    bool isNotPlayerClanParty = leaderHero.Clan != Clan.PlayerClan;
-                    if (isNotPlayerClanParty)
-                    {
-                        HandleDailyPartyGrain(mobileParty);
-                    }
 
-                    // 如果是 Player Clan 并且开启了自动升级
-                    if (leaderHero.Clan == Clan.PlayerClan && settings.isFamilyTroopAutoUpgradeEnabled)
+                // 检查 LeaderHero 和 Clan 是否为 null
+                if (leaderHero == null || leaderHero.Clan == null)
+                {
+                    continue; // 如果 LeaderHero 或 Clan 为 null，跳过当前循环
+                }
+
+                bool isNotPlayerClanParty = leaderHero.Clan != Clan.PlayerClan;
+
+                if (isNotPlayerClanParty)
+                {
+                    HandleDailyPartyGrain(mobileParty);
+                    UpgradeAIParty(mobileParty.Party);
+                }
+
+                if (leaderHero.Clan == Clan.PlayerClan && settings.isFamilyTroopAutoUpgradeEnabled)
+                {
+                    if (mobileParty.Party != null) // 检查 Party 是否为 null
                     {
                         UpgradeAIParty(mobileParty.Party);
+                    }
+                    else
+                    {
+                        continue; 
                     }
                 }
             }
@@ -58,7 +88,14 @@ namespace YuefPartyEnhancement
             {
                 foreach (MobileParty mobileParty in MobileParty.AllBanditParties)
                 {
-                    UpgradeAIParty(mobileParty.Party);
+                    if (mobileParty.Party != null) // 检查 Party 是否为 null
+                    {
+                        UpgradeAIParty(mobileParty.Party);
+                    }
+                    else
+                    {
+                        continue; // 如果 Party 为 null，跳过当前循环
+                    }
                 }
             }
 
@@ -67,7 +104,14 @@ namespace YuefPartyEnhancement
             {
                 foreach (MobileParty mobileParty in MobileParty.AllCaravanParties)
                 {
-                    UpgradeAIParty(mobileParty.Party);
+                    if (mobileParty.Party != null) // 检查 Party 是否为 null
+                    {
+                        UpgradeAIParty(mobileParty.Party);
+                    }
+                    else
+                    {
+                        continue; // 如果 Party 为 null，跳过当前循环
+                    }
                 }
             }
 
@@ -76,7 +120,14 @@ namespace YuefPartyEnhancement
             {
                 foreach (MobileParty mobileParty in MobileParty.AllVillagerParties)
                 {
-                    UpgradeAIParty(mobileParty.Party);
+                    if (mobileParty.Party != null) // 检查 Party 是否为 null
+                    {
+                        UpgradeAIParty(mobileParty.Party);
+                    }
+                    else
+                    {
+                        continue; // 如果 Party 为 null，跳过当前循环
+                    }
                 }
             }
 
@@ -85,12 +136,25 @@ namespace YuefPartyEnhancement
             {
                 foreach (MobileParty mobileParty in MobileParty.AllGarrisonParties)
                 {
-                    // 判断是否是玩家城市的驻军
-                    if (mobileParty.CurrentSettlement.OwnerClan == Clan.PlayerClan &&
-                        !settings.isPlayerCityTroopsUpgradeEnabled)
-                        continue;
+                    if (mobileParty.CurrentSettlement != null && mobileParty.CurrentSettlement.OwnerClan != null)
+                    {
+                        // 判断是否是玩家城市的驻军
+                        if (mobileParty.CurrentSettlement.OwnerClan == Clan.PlayerClan && !settings.isPlayerCityTroopsUpgradeEnabled)
+                            continue;
 
-                    UpgradeAIParty(mobileParty.Party);
+                        if (mobileParty.Party != null) // 检查 Party 是否为 null
+                        {
+                            UpgradeAIParty(mobileParty.Party);
+                        }
+                        else
+                        {
+                            continue; // 如果 Party 为 null，跳过当前循环
+                        }
+                    }
+                    else
+                    {
+                        continue; // 如果 CurrentSettlement 或 OwnerClan 为 null，跳过当前循环
+                    }
                 }
             }
 
@@ -99,37 +163,48 @@ namespace YuefPartyEnhancement
             {
                 foreach (MobileParty mobileParty in MobileParty.AllMilitiaParties)
                 {
-                    // 判断是否是玩家城市的民兵
-                    if (mobileParty.CurrentSettlement.OwnerClan == Clan.PlayerClan &&
-                        !settings.isPlayerCityTroopsUpgradeEnabled)
-                        continue;
+                    if (mobileParty.CurrentSettlement != null && mobileParty.CurrentSettlement.OwnerClan != null)
+                    {
+                        // 判断是否是玩家城市的民兵
+                        if (mobileParty.CurrentSettlement.OwnerClan == Clan.PlayerClan && !settings.isPlayerCityTroopsUpgradeEnabled)
+                            continue;
 
-                    UpgradeAIParty(mobileParty.Party);
+                        if (mobileParty.Party != null) // 检查 Party 是否为 null
+                        {
+                            UpgradeAIParty(mobileParty.Party);
+                        }
+                        else
+                        {
+                            continue; // 如果 Party 为 null，跳过当前循环
+                        }
+                    }
+                    else
+                    {
+                        continue; // 如果 CurrentSettlement 或 OwnerClan 为 null，跳过当前循环
+                    }
                 }
             }
         }
 
-
         private void HandleDailyPartyGrain(MobileParty mobileParty)
         {
-            if (!GlobalSettings<MCMSetting>.Instance.IsRecruitmentEnabled) return;
+            if (!settings.IsRecruitmentEnabled) return;
             // 如果粮食分配量不为0，进行处理
-            if (GlobalSettings<MCMSetting>.Instance.AIDailyPartyGrainAmount != 0)
+            if (settings.AIDailyPartyGrainAmount != 0)
             {
                 ItemRoster itemRoster = mobileParty.ItemRoster;
                 // 如果粮食数量小于等于300，则增加粮食
                 if (itemRoster.GetItemNumber(DefaultItems.Grain) <= 300)
                 {
-                    itemRoster.AddToCounts(DefaultItems.Grain, GlobalSettings<MCMSetting>.Instance.AIDailyPartyGrainAmount);
+                    itemRoster.AddToCounts(DefaultItems.Grain, settings.AIDailyPartyGrainAmount);
                 }
             }
         }
 
-
         private void WeeklyTick()
         {
             // 如果没有开启招募或领主每周金钱为零，则直接返回
-            if (GlobalSettings<MCMSetting>.Instance.LordWeeklyGold == 0 || !GlobalSettings<MCMSetting>.Instance.IsRecruitmentEnabled)
+            if (settings.LordWeeklyGold == 0 || !settings.IsRecruitmentEnabled)
                 return;
 
             // 遍历所有活跃的英雄
@@ -144,110 +219,222 @@ namespace YuefPartyEnhancement
                     continue;
 
                 // 为符合条件的领主添加每周金钱
-                hero.ChangeHeroGold(GlobalSettings<MCMSetting>.Instance.LordWeeklyGold);
+                hero.ChangeHeroGold(settings.LordWeeklyGold);
             }
         }
-
-
-
-        private Random random = new Random(); // 将 Random 对象提升为类成员变量
+        private Dictionary<FormationClass, double> targetRatios = new Dictionary<FormationClass, double>
+        {
+            { FormationClass.Infantry, 0.2 },
+            { FormationClass.Ranged, 0.3 },
+            { FormationClass.Cavalry, 0.1 },
+            { FormationClass.HorseArcher, 0.4 }
+        };
 
         private void UpgradeAIParty(PartyBase party)
         {
-            TroopRoster memberRoster = party.MemberRoster;
+            // 如果阵营为空，或者阵营没有成员名册，或者成员数量为 0，直接返回
+            if (party?.MemberRoster?.Count == 0)
+                return;
 
-            // 遍历每个成员
+            TroopRoster memberRoster = party.MemberRoster;
+            Random random = new Random();
+            ExecuteUpgrades(memberRoster, party, random);
+        }
+
+        public void ExecuteUpgrades(TroopRoster memberRoster, PartyBase party, Random random)
+        {
+            if (memberRoster == null || party == null)
+            {
+                return;
+            }
+
+            var categorizedCache = new ConcurrentDictionary<HashSet<CharacterObject>, Dictionary<FormationClass, List<CharacterObject>>>();
+
             for (int i = 0; i < memberRoster.Count; i++)
             {
-                TroopRosterElement elementCopyAtIndex = memberRoster.GetElementCopyAtIndex(i);
-                CharacterObject[] upgradeTargets = elementCopyAtIndex.Character.UpgradeTargets;
+                TroopRosterElement element = memberRoster.GetElementCopyAtIndex(i);
+                CharacterObject character = element.Character;
 
-                // 如果非正规军部队升阶为正规军功能未启用，且当前角色的职业不是士兵
-                if (!GlobalSettings<MCMSetting>.Instance.isUpgradeToRegularAllowed &&
-                    elementCopyAtIndex.Character.Occupation != Occupation.Soldier)
-                {
-                    // 过滤掉 upgradeTargets 中 Occupation == Occupation.Soldier 的元素
-                    upgradeTargets = upgradeTargets
-                        .Where(target => target.Occupation != Occupation.Soldier)
-                        .ToArray();
-                }
-
-                // 如果没有可用的升级目标，跳过该兵员
-                if (upgradeTargets == null || upgradeTargets.Length == 0)
-                {
+                if (character == null || character.UpgradeTargets == null || character.UpgradeTargets.Length == 0)
                     continue;
-                }
 
-                int number = elementCopyAtIndex.Number;
-                double baseUpgradeProbability = GlobalSettings<MCMSetting>.Instance.upgradeProbability;
+                // 筛选符合条件的升级目标
+                CharacterObject[] upgradeTargets = FilterUpgradeTargets(character);
 
-                // 根据角色的阶数调整概率
-                int tier = elementCopyAtIndex.Character.Tier;
-                double adjustedProbability = baseUpgradeProbability * (1 - tier / 15.0);
-
-                // 确保调整后的概率在 [0, 100] 范围内
-                adjustedProbability = Math.Min(100.0, Math.Max(0.0, adjustedProbability));
-
-                // 计算预期升级的兵员数量
-                int upgradeCount = (int)Math.Floor(number * adjustedProbability / 100.0);
-                
-                // 计算期望值的 25% 作为波动范围
-                int fluctuation = (int)Math.Floor(upgradeCount * 0.25); // 期望值的 25%，向下取整
-                // 生成波动范围内的随机数，并加到原始的升级数量上
-                int finalUpgradeCount = upgradeCount + random.Next(-fluctuation, fluctuation + 1);
-
-
-                // 确保最终的升级数量在有效范围内
-                finalUpgradeCount = Math.Max(0, Math.Min(finalUpgradeCount, number));
-
-                // 如果没有选中任何要升级的兵员，则跳过
-                if (finalUpgradeCount == 0)
-                {
+                if (upgradeTargets.Length == 0)
                     continue;
-                }
 
-                // 随机选择一个升级目标
-                CharacterObject selectedUpgradeTarget = upgradeTargets[random.Next(upgradeTargets.Length)];
+                // 获取分类后的升级目标
+                Dictionary<FormationClass, List<CharacterObject>> categorizedTargets = GetCategorizedTargets(upgradeTargets, categorizedCache);
 
-                // 执行升级操作：移除旧兵种并加入新兵种
-                if (finalUpgradeCount > 0)
+                Dictionary<FormationClass, double> finalRatios = GetFinalRatios(categorizedTargets);
+
+                double adjustedProbability = CalculateAdjustedProbability(character);
+                // 计算最终升级数量
+                int finalUpgradeCount = CalculateFinalUpgradeCount(element, adjustedProbability, random);
+
+                // 执行兵种升级操作
+                PerformUpgrades(element, categorizedTargets, finalRatios, finalUpgradeCount, party, random);
+            }
+        }
+
+        // 根据配置筛选升级目标
+        private CharacterObject[] FilterUpgradeTargets(CharacterObject character)
+        {
+            CharacterObject[] upgradeTargets = character.UpgradeTargets;
+
+            // 根据设置限制不允许升级到常规兵种
+            if (!settings.isUpgradeToRegularAllowed && character.Occupation != Occupation.Soldier)
+            {
+                upgradeTargets = upgradeTargets.Where(target => target.Occupation != Occupation.Soldier).ToArray();
+            }
+
+            return upgradeTargets;
+        }
+
+        // 获取分类后的升级目标
+        private Dictionary<FormationClass, List<CharacterObject>> GetCategorizedTargets(
+            CharacterObject[] upgradeTargets,
+            ConcurrentDictionary<HashSet<CharacterObject>, Dictionary<FormationClass, List<CharacterObject>>> categorizedCache)
+        {
+            var upgradeTargetsSet = new HashSet<CharacterObject>(upgradeTargets);
+            if (!categorizedCache.TryGetValue(upgradeTargetsSet, out var categorizedTargets))
+            {
+                categorizedTargets = CategorizeUpgradeTargets(upgradeTargets);
+                categorizedCache[upgradeTargetsSet] = categorizedTargets;
+            }
+            return categorizedTargets;
+        }
+
+        // 对升级目标进行分类
+        private Dictionary<FormationClass, List<CharacterObject>> CategorizeUpgradeTargets(CharacterObject[] upgradeTargets)
+        {
+            var categorizedTargets = new Dictionary<FormationClass, List<CharacterObject>>();
+
+            foreach (var target in upgradeTargets)
+            {
+                if (target == null) continue;
+
+                if (!categorizedTargets.ContainsKey(target.DefaultFormationClass))
                 {
-                    party.AddMember(elementCopyAtIndex.Character, -finalUpgradeCount, 0);
-                    party.AddMember(selectedUpgradeTarget, finalUpgradeCount, 0);
+                    categorizedTargets[target.DefaultFormationClass] = new List<CharacterObject>();
+                }
+                categorizedTargets[target.DefaultFormationClass].Add(target);
+            }
+
+            return categorizedTargets;
+        }
+
+        // 计算调整后的升级概率
+        private double CalculateAdjustedProbability(CharacterObject character)
+        {
+            // 计算调整后的升级概率
+            return Math.Max(0.0, Math.Min(settings.upgradeProbability * (1 - character.Tier / 15.0), 100.0));
+        }
+
+        // 计算最终的升级数量
+        private int CalculateFinalUpgradeCount(TroopRosterElement element, double adjustedProbability, Random random)
+        {
+            // 计算该阶兵种的升阶总数量
+            int upgradeCount = (int)Math.Floor(element.Number * adjustedProbability / 100.0);
+            int fluctuation = (int)Math.Floor(upgradeCount * 0.1);  // 加入10%的波动
+            return Math.Max(0, Math.Min(upgradeCount + random.Next(-fluctuation, fluctuation + 1), element.Number));
+        }
+
+        // 获取实际目标比例，使比例和为1
+        private Dictionary<FormationClass, double> GetFinalRatios(Dictionary<FormationClass, List<CharacterObject>> categorizedTargets)
+        {
+            var finalRatios = new Dictionary<FormationClass, double>(targetRatios);
+
+            var existingCategories = categorizedTargets.Keys.ToList();
+            foreach (var category in finalRatios.Keys.ToList())
+            {
+                if (!existingCategories.Contains(category))
+                {
+                    finalRatios.Remove(category);
+                }
+            }
+
+            double totalRatio = finalRatios.Values.Sum();
+            if (totalRatio > 0 && totalRatio != 1.0)
+            {
+                if (totalRatio != 1.0)
+                {
+                    foreach (var category in finalRatios.Keys.ToList())
+                    {
+                        finalRatios[category] /= totalRatio;
+                    }
+                }
+            }
+            return finalRatios;
+        }
+
+        // 执行兵种升级操作
+        private void PerformUpgrades(
+            TroopRosterElement element,
+            Dictionary<FormationClass, List<CharacterObject>> categorizedTargets,
+            Dictionary<FormationClass, double> finalRatios,
+            int finalUpgradeCount,
+            PartyBase party,
+            Random random)
+        {
+            foreach (var category in categorizedTargets)
+            {
+                FormationClass formationClass = category.Key;
+                List<CharacterObject> targetsInCategory = category.Value;
+
+                // 提取比例
+                double categoryRatio = finalRatios[formationClass];
+
+                int categoryUpgradeCount = (int)Math.Floor(finalUpgradeCount * categoryRatio);
+
+                if (categoryUpgradeCount > 0)
+                {
+                    int perTargetUpgradeCount = categoryUpgradeCount / targetsInCategory.Count;
+
+                    if (perTargetUpgradeCount == 0 && categoryUpgradeCount > 0)
+                    {
+                        var randomTarget = targetsInCategory[random.Next(targetsInCategory.Count)];
+
+                        // 移除旧兵种
+                        party.AddMember(element.Character, -1, 0);
+                        // 添加新兵种
+                        party.AddMember(randomTarget, 1, 0);
+                    }
+                    else
+                    {
+                        foreach (var target in targetsInCategory)
+                        {
+                            // 移除旧兵种并添加新兵种
+                            party.AddMember(element.Character, -perTargetUpgradeCount, 0);
+                            party.AddMember(target, perTargetUpgradeCount, 0);
+                        }
+                    }
                 }
             }
         }
 
         public void AddSoliderToParty(MobileParty mobileParty, Settlement settlement, Hero hero)
         {
-            // 如果没有启用招募功能，直接返回
-            if (!GlobalSettings<MCMSetting>.Instance.IsRecruitmentEnabled) return;
+            if (!settings.IsRecruitmentEnabled) return;
 
-            // 检查输入有效性：空值、玩家角色、或是藏匿地点
             if (mobileParty == null || settlement == null || hero == null || hero.CharacterObject.IsPlayerCharacter || settlement.IsHideout)
             {
-                return; // 输入无效时直接返回
+                return;
             }
 
-            // 确保领主的文化和基本兵种存在
             if (mobileParty.LeaderHero != null && mobileParty.LeaderHero.Culture?.BasicTroop != null)
             {
-                // 调用添加兵种的方法
                 AddSoldiersToParty(mobileParty, mobileParty.LeaderHero, settlement);
             }
         }
 
-
         private void AddSoldiersToParty(MobileParty mobileParty, Hero lord, Settlement settlement)
         {
-            // 检查输入有效性，首先确认 settlement 是否为 null
             if (settlement == null || mobileParty == null || lord == null || Hero.MainHero.IsPrisoner || lord.Culture != settlement.Culture)
             {
                 return; // 如果无效则返回
             }
-
-            // 获取配置项
-            var settings = GlobalSettings<MCMSetting>.Instance;
             int maxNumber = mobileParty.Party.PartySizeLimit; // 获取队伍的最大人数
             int currentNumber = mobileParty.Party.NumberOfAllMembers; // 获取当前队伍人数
 
@@ -266,177 +453,156 @@ namespace YuefPartyEnhancement
                 return;
             }
 
-            // 优先处理高阶兵种，按阶级降序排序
-            var sortedBasicTroops = basicTroops.OrderByDescending(troop => troop.Tier).ToList();
-            var sortedEliteTroops = eliteTroops.OrderByDescending(troop => troop.Tier).ToList();
-
             // 扣除金钱
             lord.ChangeHeroGold(-settings.SingleRecruitmentCost);
 
             // 根据 settlement 类型添加兵种
             if (settlement.IsTown)
             {
-                AddBasicTroopsToParty(mobileParty, sortedBasicTroops, ref currentNumber, maxNumber);
+                AddTroopsToParty(mobileParty, basicTroops, ref currentNumber, maxNumber);
             }
             else if (settlement.IsVillage)
             {
-                AddEliteTroopsToParty(mobileParty, sortedEliteTroops, ref currentNumber, maxNumber);
+                AddTroopsToParty(mobileParty, eliteTroops, ref currentNumber, maxNumber);
             }
             else
             {
-                return; // 如果不是城镇或村庄，则不进行任何操作
+                return;
             }
         }
 
-
-
-        private void AddBasicTroopsToParty(MobileParty mobileParty, List<CharacterObject> sortedBasicTroops, ref int currentNumber, int maxNumber)
+        private CharacterObject GetTroopWithLeastMembers(MobileParty mobileParty, List<CharacterObject> tierTroops)
         {
-            // 获取一次性最大招募数量
-            int maxAddNumber = GlobalSettings<MCMSetting>.Instance.BasicSoldierOneTimeRecruitmentAmount;
-            int addedSoldierCount = 0;  // 已添加兵员数量
 
-            // 计算剩余空间
-            int remainingSpace = maxNumber - currentNumber;
-            if (remainingSpace <= 0)
+            if (tierTroops.Count == 0)
             {
-                return; // 如果没有剩余空间，直接返回
+                return null;
             }
 
-            // 遍历排序后的基础兵种列表，按阶级降序添加
-            foreach (var soldierType in sortedBasicTroops)
-            {
-                // 计算此兵种应该添加的数量
-                int calculatedSoldierCount = CalculateSoldierCount(soldierType);
+            CharacterObject troopWithLeastMembers = null;
+            int minTroopCount = int.MaxValue;
 
-                // 如果剩余空间已经不足，退出循环
-                if (addedSoldierCount >= maxAddNumber || remainingSpace <= 0)
+            foreach (var soldierType in tierTroops)
+            {
+                int troopCount = mobileParty.MemberRoster.GetTroopCount(soldierType);
+                if (troopCount < minTroopCount)
                 {
-                    break;
+                    minTroopCount = troopCount;
+                    troopWithLeastMembers = soldierType;
                 }
-
-                // 限制每次添加的数量，不能超过剩余空间
-                calculatedSoldierCount = Math.Min(calculatedSoldierCount, remainingSpace);
-
-                // 将计算得到的兵员数量添加到 MobileParty
-                mobileParty.MemberRoster.AddToCounts(soldierType, calculatedSoldierCount, false, 0, 0, true, -1);
-
-                // 更新已添加的兵员数量和剩余空间
-                addedSoldierCount += calculatedSoldierCount;
-                currentNumber += calculatedSoldierCount;
-                remainingSpace -= calculatedSoldierCount;
             }
+
+            return troopWithLeastMembers;
         }
 
-        // 计算兵种应该添加的数量
-        private int CalculateSoldierCount(CharacterObject soldierType)
+        private int CalculateSoldierCount(int tier)
         {
-            if (soldierType.Tier >= 3)
+            if (tier >= 3)
             {
-                return Math.Max(0, (MCMSetting.Instance.AIMaxBasicTroopsTier - soldierType.Tier + 1) * 3);
+                return Math.Max(0, (settings.AIMaxBasicTroopsTier - tier + 1) * 2);
             }
             return 0;
         }
 
-
-        private void AddEliteTroopsToParty(MobileParty mobileParty, List<CharacterObject> sortedEliteTroops, ref int currentNumber, int maxNumber)
+        private void AddTroopsToParty(MobileParty mobileParty, Dictionary<int, List<CharacterObject>> TroopsByTier, ref int currentNumber, int maxNumber)
         {
-            // 获取最大添加的兵员数量
-            int maxAddNumber = GlobalSettings<MCMSetting>.Instance.EliteSoldierOneTimeRecruitmentAmount;
-            int addedSoldierCount = 0;  // 已添加兵员数量
+            int maxAddNumber = settings.BasicSoldierOneTimeRecruitmentAmount;
 
-            // 计算剩余空间
-            int remainingSpace = maxNumber - currentNumber;
-            if (remainingSpace <= 0)
+            int totalAdded = 0;
+            for (int tier = settings.AIMaxBasicTroopsTier; tier >= 0; tier--)
             {
-                return; // 如果没有剩余空间，直接返回
-            }
+                List<CharacterObject> tierBasicTroops = TroopsByTier.ContainsKey(tier) ? TroopsByTier[tier] : new List<CharacterObject>();
+                int calculatedSoldierCount = CalculateSoldierCount(tier);
+                var soldierType = GetTroopWithLeastMembers(mobileParty, tierBasicTroops);
 
-            // 遍历排序后的精英兵种列表，按阶级降序添加
-            foreach (var soldierType in sortedEliteTroops)
-            {
-                // 计算此兵种应该添加的数量
-                int calculatedSoldierCount = CalculateEliteSoldierCount(soldierType);
+                if (soldierType != null)
+                {
+                    int currentTroopCount = mobileParty.MemberRoster.GetTroopCount(soldierType);
 
-                // 如果没有剩余空间或者已经达到最大添加数量，跳出循环
-                if (addedSoldierCount >= maxAddNumber || remainingSpace <= 0)
+                    int addCount = Math.Min(calculatedSoldierCount, maxAddNumber - totalAdded);
+
+                    mobileParty.MemberRoster.AddToCounts(soldierType, addCount, false, 0, 0, true, -1);
+                    totalAdded += addCount;
+                }
+
+                if (totalAdded >= maxAddNumber)
                 {
                     break;
                 }
-
-                // 限制每次添加的数量，不能超过剩余空间
-                calculatedSoldierCount = Math.Min(calculatedSoldierCount, remainingSpace);
-
-                // 将计算得到的兵员数量添加到 MobileParty
-                mobileParty.MemberRoster.AddToCounts(soldierType, calculatedSoldierCount, false, 0, 0, true, -1);
-
-                // 更新已添加的兵员数量和剩余空间
-                addedSoldierCount += calculatedSoldierCount;
-                currentNumber += calculatedSoldierCount;
-                remainingSpace -= calculatedSoldierCount;
             }
+
+            currentNumber = totalAdded;
         }
 
-        // 计算精英兵种应该添加的数量
-        private int CalculateEliteSoldierCount(CharacterObject soldierType)
-        {
-            if (soldierType.Tier >= 2)
-            {
-                return Math.Max(0, (GlobalSettings<MCMSetting>.Instance.AIMaxEliteTroopsTier - soldierType.Tier + 1) * 2);
-            }
-            return 0;
-        }
-
-
-        private (List<CharacterObject> basicTroops, List<CharacterObject> eliteTroops) GetAllSoldiers(CultureObject culture)
+        private (Dictionary<int, List<CharacterObject>> basicTroopsByTier, Dictionary<int, List<CharacterObject>> eliteTroopsByTier) GetAllSoldiers(CultureObject culture)
         {
             // 检查是否已缓存 BasicTroop 和 EliteTroop 列表
-            if (basicTroopCache.ContainsKey(culture.BasicTroop) &&
-                eliteTroopCache.ContainsKey(culture.EliteBasicTroop))
+            if (basicTroopCache.TryGetValue(culture.BasicTroop, out var cachedBasicTroops) &&
+                eliteTroopCache.TryGetValue(culture.EliteBasicTroop, out var cachedEliteTroops))
             {
-                // 如果已缓存，直接返回缓存结果
                 return (
-                    basicTroopCache[culture.BasicTroop],
-                    eliteTroopCache[culture.EliteBasicTroop]
+                    GetTroopsByTier(cachedBasicTroops),
+                    GetTroopsByTier(cachedEliteTroops)
                 );
             }
 
-            // 使用 HashSet 来避免重复元素
             var allBasicTroops = new HashSet<CharacterObject>();
             var allEliteTroops = new HashSet<CharacterObject>();
 
-            // 定义递归函数，处理兵种的升级目标并防止重复添加
+            // 增加兵种和升级目标
             void AddTroopAndUpgrades(CharacterObject troop, HashSet<CharacterObject> troopList)
             {
-                if (troop == null || troopList.Contains(troop)) return;
+                if (troop == null) return;
 
-                // 添加当前兵种
-                troopList.Add(troop);
+                var stack = new Stack<CharacterObject>();
+                stack.Push(troop);
 
-                // 递归添加所有升级目标
-                foreach (var target in troop.UpgradeTargets)
+                while (stack.Count > 0)
                 {
-                    AddTroopAndUpgrades(target, troopList);
+                    var currentTroop = stack.Pop();
+                    if (troopList.Contains(currentTroop)) continue;
+
+                    troopList.Add(currentTroop);
+                    foreach (var target in currentTroop.UpgradeTargets)
+                    {
+                        stack.Push(target);
+                    }
                 }
             }
 
-            // 获取 BasicTroop 和 EliteBasicTroop 并进行递归处理
+            // 处理基础兵种
             if (culture.BasicTroop != null)
                 AddTroopAndUpgrades(culture.BasicTroop, allBasicTroops);
 
+            // 处理精英兵种
             if (culture.EliteBasicTroop != null)
                 AddTroopAndUpgrades(culture.EliteBasicTroop, allEliteTroops);
 
-            // 将结果转换为 List 并缓存起来
+            // 缓存兵种数据
             var basicTroops = allBasicTroops.ToList();
             var eliteTroops = allEliteTroops.ToList();
 
             basicTroopCache[culture.BasicTroop] = basicTroops;
             eliteTroopCache[culture.EliteBasicTroop] = eliteTroops;
 
-            // 返回两个列表
-            return (basicTroops, eliteTroops);
+            return (
+                GetTroopsByTier(basicTroops),
+                GetTroopsByTier(eliteTroops)
+            );
         }
+
+        private Dictionary<int, List<CharacterObject>> GetTroopsByTier(List<CharacterObject> troops)
+        {
+            // 检查输入是否为 null 或空
+            if (troops == null || troops.Count == 0)
+                return new Dictionary<int, List<CharacterObject>>();
+
+            return troops
+                .GroupBy(t => t.Tier)
+                .OrderByDescending(g => g.Key)
+                .ToDictionary(g => g.Key, g => g.ToList()); // 转换为字典，Tier 为键，兵种列表为值
+        }
+
 
         public override void SyncData(IDataStore dataStore)
         {
