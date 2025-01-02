@@ -39,7 +39,7 @@
 
 ---
 
-## Module: YuefPartEnhancement  
+## Module: YuefPartyEnhancement  
 ###### Version: 1.0.2  
 ###### Author: YuefChen  
 ###### Email: YueF_Chen@outlook.com  
