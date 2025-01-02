@@ -1,4 +1,4 @@
-﻿## 模组: YuefPartEnhancement  
+﻿## 模组: YuefPartyEnhancement  
 ###### 版本: 1.0.2  
 ###### 作者: YuefChen  
 ###### 邮箱: YueF_Chen@outlook.com  
