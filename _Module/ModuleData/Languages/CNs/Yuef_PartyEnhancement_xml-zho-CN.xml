@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="简体中文"/>
+	</tags>
+	<strings>
+		<string id="Yuef_ModName" text="部队增强 Yuef"/>
+		<string id="Yuef_Group_1" text="城镇金钱"/>
+		<string id="Yuef_Option_11" text="每日商店补给金额"/>
+		<string id="Yuef_HinText_11" text="城镇商店的每日商店补给量"/>
+		<string id="Yuef_Option_12" text="城镇商店金额上限"/>
+		<string id="Yuef_HinText_12" text="城镇商店金额的补给上限,高于上限不会获得补给"/>
+		<string id="Yuef_Option_21" text="启用部队募兵功能"/>
+		<string id="Yuef_HinText_21" text="开启/关闭部队募兵功能"/>
+		<string id="Yuef_Group_2" text="部队募兵强化"/>
+		<string id="Yuef_Option_22" text="每周领主奖励金额"/>
+		<string id="Yuef_HinText_22" text="AI领主获得的金额,已有金额高于1000000不会进行奖励"/>
+		<string id="Yuef_Option_23" text="最低募兵费用"/>
+		<string id="Yuef_HinText_23" text="最低费用设置,领主当前资金低于最低费用时不会进行募兵"/>
+		<string id="Yuef_Option_24" text="单次募兵费用"/>
+		<string id="Yuef_HinText_24" text="单次募兵消耗的资金(上限不会超过最低募兵费用)"/>
+		<string id="Yuef_Option_25" text="AI每日部队粮食补给量"/>
+		<string id="Yuef_HinText_25" text="AI控制的部队每日粮食补给量,高于300不会进行补给"/>
+		<string id="Yuef_Option_26" text="AI最大平民兵种阶数"/>
+		<string id="Yuef_HinText_26" text="AI控制的部队募兵可获得的最大平民兵种阶数,注意该值的上限也会影响获得的某阶兵种的获取数量"/>
+		<string id="Yuef_Option_27" text="AI最大贵族兵种阶数"/>
+		<string id="Yuef_HinText_27" text="AI控制的部队募兵可获得的最大贵族兵种阶数,注意该值的上限也会影响获得的某阶兵种的获取数量"/>
+		<string id="Yuef_Option_28" text="平民兵种一次招募数量"/>
+		<string id="Yuef_HinText_28" text="每次可以招募的平民兵种总数量"/>
+		<string id="Yuef_Option_29" text="贵族兵种一次招募数量"/>
+		<string id="Yuef_HinText_29" text="每次可以招募的贵族兵种总数量"/>
+		<string id="Yuef_Group_3" text="部队升阶"/>
+		<string id="Yuef_Option_31" text="是否对玩家启用"/>
+		<string id="Yuef_HinText_31" text="开启后,即使你在挂机,你的部队也会自己升级了,当然结果是随机的"/>
+		<string id="Yuef_Option_32" text="是否对玩家家族部队启用"/>
+		<string id="Yuef_HinText_32" text="家族部队不包含玩家自己"/>
+		<string id="Yuef_Option_33" text="是否对强盗部队启用自动升阶"/>
+		<string id="Yuef_HinText_33" text="开启后，强盗部队(包括藏身处)将自动升级"/>
+		<string id="Yuef_Option_34" text="是否对村民部队启用自动升阶"/>
+		<string id="Yuef_HinText_34" text="开启后，村民部队将自动升级(未开启允许非正规军部队升阶为正规军时无法升级)"/>
+		<string id="Yuef_Option_35" text="是否对商队部队启用自动升阶"/>
+		<string id="Yuef_HinText_35" text="开启后，商队部队将自动升级"/>
+		<string id="Yuef_Option_36" text="是否对城市驻军启用自动升阶"/>
+		<string id="Yuef_HinText_36" text="开启后城市驻军会自动升级"/>
+		<string id="Yuef_Option_37" text="是否对民兵启用自动升阶"/>
+		<string id="Yuef_HinText_37" text="开启后民兵(原版民兵无升级对象)会自动升级"/>
+		<string id="Yuef_Option_38" text="是否对玩家城市驻军和民兵启用"/>
+		<string id="Yuef_HinText_38" text="开启后玩家城市驻军和民兵等会自动升级(至少启用驻军或民兵中的一项,无法单独开启)"/>
+		<string id="Yuef_Option_39" text="允许非正规军部队升阶为正规军"/>
+		<string id="Yuef_HinText_39" text="开启后,强盗,劫匪,村民等自动升级会升级为正规军(若可能)"/>
+		<string id="Yuef_Option_310" text="兵种升阶基础概率"/>
+		<string id="Yuef_HinText_310" text="根据基础概率每日结算,结算时升阶综合概率受到阶数影响,阶数越高综合概率越低(100%基础时8阶兵会有46.67%升阶)"/>
+	</strings>
+</base>

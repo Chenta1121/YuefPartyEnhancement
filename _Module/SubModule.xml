@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Module xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/BUTR/Bannerlord.XmlSchemas/master/SubModule.xsd" >
+	<Id value="YuefPartyEnhancement" />
+	<Name value="YuefPartyEnhancement" />
+	<Version value="v1.0.2" />
+	<ModuleCategory value="Singleplayer"/>
+	<ModuleType value="Community" />
+
+	<DependedModules>
+		<DependedModule Id="Bannerlord.UIExtenderEx" />
+		<DependedModule Id="Native" />
+		<DependedModule Id="SandBoxCore" />
+		<DependedModule Id="Sandbox" />
+		<DependedModule Id="StoryMode" />
+		<DependedModule Id="CustomBattle" />
+	</DependedModules>
+
+	<SubModules>
+		<SubModule>
+			<Name value="YuefPartyEnhancement" />
+			<DLLName value="YuefPartyEnhancement.dll" />
+			<SubModuleClassType value="YuefPartyEnhancement.SubModule" />
+		</SubModule>
+	</SubModules>
+</Module>

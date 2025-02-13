@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="English"/>
+	</tags>
+	<strings>
+		<string id="Yuef_ModName" text="Troop Enhancement Yuef"/>
+		<string id="Yuef_Group_1" text="Town Money"/>
+		<string id="Yuef_Option_11" text="Daily Store Supply Amount"/>
+		<string id="Yuef_HinText_11" text="The daily supply amount at town stores"/>
+		<string id="Yuef_Option_12" text="Town Store Supply Limit"/>
+		<string id="Yuef_HinText_12" text="The supply limit for town stores, supplies won't be provided if it exceeds the limit"/>
+		<string id="Yuef_Option_21" text="Enable Troop Recruitment Feature"/>
+		<string id="Yuef_HinText_21" text="Turn on/off the troop recruitment feature"/>
+		<string id="Yuef_Group_2" text="Troop Recruitment Enhancement"/>
+		<string id="Yuef_Option_22" text="Weekly Lord Reward Amount"/>
+		<string id="Yuef_HinText_22" text="Amount received by AI lords, no reward will be given if the amount exceeds 1,000,000"/>
+		<string id="Yuef_Option_23" text="Minimum Recruitment Cost"/>
+		<string id="Yuef_HinText_23" text="Minimum cost setting, lords will not recruit troops if their current funds are below the minimum cost"/>
+		<string id="Yuef_Option_24" text="Single Recruitment Cost"/>
+		<string id="Yuef_HinText_24" text="The cost per recruitment (the upper limit will not exceed the minimum recruitment cost)"/>
+		<string id="Yuef_Option_25" text="AI Daily Troop Food Supply"/>
+		<string id="Yuef_HinText_25" text="Daily food supply for AI-controlled troops, supplies will not be provided if it exceeds 300"/>
+		<string id="Yuef_Option_26" text="AI Maximum Civilian Troop Tier"/>
+		<string id="Yuef_HinText_26" text="The maximum tier of civilian troops available for AI recruitment, note that the upper limit also affects the number of troops of certain tiers"/>
+		<string id="Yuef_Option_27" text="AI Maximum Noble Troop Tier"/>
+		<string id="Yuef_HinText_27" text="The maximum tier of noble troops available for AI recruitment, note that the upper limit also affects the number of troops of certain tiers"/>
+		<string id="Yuef_Option_28" text="Civilian Troops Recruitment Amount"/>
+		<string id="Yuef_HinText_28" text="The total number of civilian troops that can be recruited at once"/>
+		<string id="Yuef_Option_29" text="Noble Troops Recruitment Amount"/>
+		<string id="Yuef_HinText_29" text="The total number of noble troops that can be recruited at once"/>
+		<string id="Yuef_Group_3" text="Troop Upgrade"/>
+		<string id="Yuef_Option_31" text="Enable for Player"/>
+		<string id="Yuef_HinText_31" text="Once enabled, even when AFK, your troops will automatically level up, though the result is random"/>
+		<string id="Yuef_Option_32" text="Enable for Player's Family Troops"/>
+		<string id="Yuef_HinText_32" text="Family troops do not include the player"/>
+		<string id="Yuef_Option_33" text="Enable Auto Upgrade for Bandit Troops"/>
+		<string id="Yuef_HinText_33" text="When enabled, bandit troops will automatically level up"/>
+		<string id="Yuef_Option_34" text="Enable Auto Upgrade for Villager Troops"/>
+		<string id="Yuef_HinText_34" text="When enabled, villager troops will automatically level up (if auto-upgrade for irregular troops is disabled, they will not upgrade)"/>
+		<string id="Yuef_Option_35" text="Enable Auto Upgrade for Caravan Troops"/>
+		<string id="Yuef_HinText_35" text="When enabled, caravan troops will automatically level up"/>
+		<string id="Yuef_Option_36" text="Enable Auto Upgrade for Garrison Troops"/>
+		<string id="Yuef_HinText_36" text="When enabled, garrison troops in cities will automatically level up"/>
+		<string id="Yuef_Option_37" text="Enable Auto Upgrade for Militia"/>
+		<string id="Yuef_HinText_37" text="When enabled, militia (original militia without upgrade targets) will automatically level up"/>
+		<string id="Yuef_Option_38" text="Enable for Player's City Garrisons and Militia"/>
+		<string id="Yuef_HinText_38" text="When enabled, city garrisons and militia will automatically level up (at least one of garrisons or militia must be enabled, cannot be enabled separately)"/>
+		<string id="Yuef_Option_39" text="Allow Irregular Troops to Upgrade to Regular Troops"/>
+		<string id="Yuef_HinText_39" text="When enabled, bandits, robbers, villagers, etc., will automatically upgrade to regular troops (if possible)"/>
+		<string id="Yuef_Option_310" text="Troop Upgrade Base Probability"/>
+		<string id="Yuef_HinText_310" text="Base probability for upgrading, with the final upgrade probability affected by tier; higher tiers have a lower probability (at 100% base, tier 8 troops have a 46.67% chance to upgrade)"/>
+	</strings>
+</base>

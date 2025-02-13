@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+	<tags>
+		<tag language="繁體中文"/>
+	</tags>
+	<strings>
+		<string id="Yuef_ModName" text="部隊增強 Yuef"/>
+		<string id="Yuef_Group_1" text="城鎮金錢"/>
+		<string id="Yuef_Option_11" text="每日商店補給金額"/>
+		<string id="Yuef_HinText_11" text="城鎮商店的每日商店補給量"/>
+		<string id="Yuef_Option_12" text="城鎮商店金額上限"/>
+		<string id="Yuef_HinText_12" text="城鎮商店金額的補給上限, 高於上限不會獲得補給"/>
+		<string id="Yuef_Option_21" text="啟用部隊募兵功能"/>
+		<string id="Yuef_HinText_21" text="開啟/關閉部隊募兵功能"/>
+		<string id="Yuef_Group_2" text="部隊募兵強化"/>
+		<string id="Yuef_Option_22" text="每週領主獎勳金額"/>
+		<string id="Yuef_HinText_22" text="AI領主獲得的金額, 已有金額高於1000000不會進行獎勳"/>
+		<string id="Yuef_Option_23" text="最低募兵費用"/>
+		<string id="Yuef_HinText_23" text="最低費用設定, 領主當前資金低於最低費用時不會進行募兵"/>
+		<string id="Yuef_Option_24" text="單次募兵費用"/>
+		<string id="Yuef_HinText_24" text="單次募兵消耗的資金(上限不會超過最低募兵費用)"/>
+		<string id="Yuef_Option_25" text="AI每日部隊糧食補給量"/>
+		<string id="Yuef_HinText_25" text="AI控制的部隊每日糧食補給量, 高於300不會進行補給"/>
+		<string id="Yuef_Option_26" text="AI最大平民兵種階數"/>
+		<string id="Yuef_HinText_26" text="AI控制的部隊募兵可獲得的最大平民兵種階數, 注意該值的上限也會影響獲得的某階兵種的獲取數量"/>
+		<string id="Yuef_Option_27" text="AI最大貴族兵種階數"/>
+		<string id="Yuef_HinText_27" text="AI控制的部隊募兵可獲得的最大貴族兵種階數, 注意該值的上限也會影響獲得的某階兵種的獲取數量"/>
+		<string id="Yuef_Option_28" text="平民兵種一次招募數量"/>
+		<string id="Yuef_HinText_28" text="每次可以招募的平民兵種總數量"/>
+		<string id="Yuef_Option_29" text="貴族兵種一次招募數量"/>
+		<string id="Yuef_HinText_29" text="每次可以招募的貴族兵種總數量"/>
+		<string id="Yuef_Group_3" text="部隊升階"/>
+		<string id="Yuef_Option_31" text="是否對玩家啟用"/>
+		<string id="Yuef_HinText_31" text="開啟後, 即使你在掛機, 你的部隊也會自己升級了, 當然結果是隨機的"/>
+		<string id="Yuef_Option_32" text="是否對玩家家族部隊啟用"/>
+		<string id="Yuef_HinText_32" text="家族部隊不包含玩家自己"/>
+		<string id="Yuef_Option_33" text="是否對強盜部隊啟用自動升階"/>
+		<string id="Yuef_HinText_33" text="開啟後，強盜部隊(包括藏身處)將自動升級"/>
+		<string id="Yuef_Option_34" text="是否對村民部隊啟用自動升階"/>
+		<string id="Yuef_HinText_34" text="開啟後，村民部隊將自動升級(未開啟允許非正規軍部隊升階為正規軍時無法升級)"/>
+		<string id="Yuef_Option_35" text="是否對商隊部隊啟用自動升階"/>
+		<string id="Yuef_HinText_35" text="開啟後，商隊部隊將自動升級"/>
+		<string id="Yuef_Option_36" text="是否對城市駐軍啟用自動升階"/>
+		<string id="Yuef_HinText_36" text="開啟後城市駐軍會自動升級"/>
+		<string id="Yuef_Option_37" text="是否對民兵啟用自動升階"/>
+		<string id="Yuef_HinText_37" text="開啟後民兵(原版民兵無升級對象)會自動升級"/>
+		<string id="Yuef_Option_38" text="是否對玩家城市駐軍和民兵啟用"/>
+		<string id="Yuef_HinText_38" text="開啟後玩家城市駐軍和民兵等會自動升級(至少啟用駐軍或民兵中的一項, 無法單獨開啟)"/>
+		<string id="Yuef_Option_39" text="允許非正規軍部隊升階為正規軍"/>
+		<string id="Yuef_HinText_39" text="開啟後, 強盜, 劫匪, 村民等自動升級會升級為正規軍(若可能)"/>
+		<string id="Yuef_Option_310" text="兵種升階基礎機率"/>
+		<string id="Yuef_HinText_310" text="根據基礎機率每日結算, 結算時升階綜合機率受到階數影響, 階數越高綜合機率越低(100%基礎時8階兵會有46.67%升階)"/>
+	</strings>
+</base>
